@@ -1,11 +1,11 @@
 import discord
 import logging
 import stockpile
-from sys import path, stdout
+from sys import stdout
 
-path.append('../Discord')
+#path.append('../Discord')
 
-from Discord.key import DiscordToken, guild_id
+from key import DiscordToken, guild_id
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -35,10 +35,8 @@ async def getStockpile (channel: discord.TextChannel, stockpiles):
         except discord.NotFound:
             #this is normal to happen
             continue
-        except:
-            break
 
-        return id, message #this channel has a stockpile, return the id
+        return id, message #this channel has a stockpile, return the id and the message
     return None, None
     #return None #this channel does not have a stockpile, return none
 
@@ -74,6 +72,10 @@ def loadStockpiles(filename = "stockpile.txt"):
     return dictionary
 
 def printMessage(message : discord.Message, fileout = stdout):
+    """
+    Helper function to print out the contents of a discord message. Defaults to stdout.
+    """
+    
     print(f"""
     Message ID: {message.id}
     By: {message.author.display_name} ({message.author.id})
@@ -122,7 +124,7 @@ async def add_code(interaction: discord.Interaction, hex: str, depot: str, name:
         
     else:
         print("12")
-        stock = stockpiles[messageID][2]
+        stock = stockpiles[messageID]
         stock.addStockpile(hex, depot, name, code)
         stock.saveJson()
         #message = stockpiles[messageID][1]
@@ -148,7 +150,7 @@ async def remove_code(interaction: discord.Interaction, hex: str, depot:str, nam
         #there is no stockpile in this channel.
         await interaction.response.send_message("Cannot find a stockpile here.")
     else:
-        stock = stockpiles[messageID][2]
+        stock = stockpiles[messageID]
         stock.removeStockpile(hex, depot, name)
         stock.saveJson()
         #message = stockpiles[messageID][1]
@@ -170,7 +172,7 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
     message = await interaction.channel.send(f"__**{name}:**__")
     stock = stockpile.Stockpile(name, name + "stockpile.txt")
     stock.updateMessageID(message.id)
-    stockpiles[message.id] = [interaction.channel, message, stock] #using the message id as the overall id
+    stockpiles[message.id] = stock #using the message id as the overall id
     stock.saveJson()
     #TODO, delete previous stockpile in this channel from memory
     #TODO respond
