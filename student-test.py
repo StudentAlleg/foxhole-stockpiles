@@ -1,9 +1,9 @@
 import discord
 import logging
 import stockpile
-import sys
+from sys import path, stdout
 
-sys.path.append('../Discord')
+path.append('../Discord')
 
 from Discord.key import DiscordToken, guild_id
 
