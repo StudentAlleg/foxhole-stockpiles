@@ -58,7 +58,12 @@ def loadStockpiles(filename = "stockpile.txt"):
     """
     Load stockpiles from file(s) based off of the file titles in filename
     """
-    f = open(filename)
+    try:
+        f = open(filename)
+    except FileNotFoundError:
+        f = open(filename, "x")
+        f.close()
+        return {}
     dictionary = dict()
     filelines = f.readlines()
     for line in filelines:
