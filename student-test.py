@@ -139,7 +139,7 @@ async def add_code(interaction: discord.Interaction, hex: str, depot: str, name:
         print (f"awaiting on uppdating message id: {message.id} to:\n{text}")
         await message.edit(content=text)
         print(f"await on message {message.id} over.")
-        await interaction.response.send_message("Added code to stockpile")
+        await interaction.response.send_message(content="Code Added.", ephemeral=True)
 
 
 @client.tree.command()
@@ -165,7 +165,8 @@ async def remove_code(interaction: discord.Interaction, hex: str, depot:str, nam
         print (f"awaiting on uppdating message id: {message.id} to:\n{text}")
         await message.edit(content=text)
         print(f"await on message {message.id} over.")
-        await interaction.response.send_message("Removed code to stockpile")
+        await interaction.response.send_message(content="Code Deleted.", ephemeral=True)
+
 
 @client.tree.command()
 @discord.app_commands.describe(
@@ -181,6 +182,7 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
     stock.updateMessageID(message.id)
     stockpiles[message.id] = stock #using the message id as the overall id
     stock.saveJson()
+    await interaction.response.send_message(content="Stockpile Created.", ephemeral=True)
     #TODO, delete previous stockpile in this channel from memory
     #TODO respond
 
