@@ -9,7 +9,7 @@ class Stockpile():
         self.filename = filename
         self.hexes = dict()
         if NewStockpile:
-            f = open("stockpile.txt", "a+")
+            f = open("stockpiles/stockpile.txt", "a+")
             f.write(filename + '\n')
             f.close()
     

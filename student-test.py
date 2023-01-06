@@ -3,9 +3,10 @@ import logging
 import stockpile
 from sys import stdout
 
-#path.append('../Discord')
-
 from key import DiscordToken, guild_id
+
+#TODO
+#delete stockpile in the channel (and on create)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -54,7 +55,7 @@ async def getStockpile (channel: discord.TextChannel, stockpiles):
     #        return message.id
     #return None
 
-def loadStockpiles(filename = "stockpile.txt"):
+def loadStockpiles(filename = "stockpiles/stockpile.txt"):
     """
     Load stockpiles from file(s) based off of the file titles in filename
     """
@@ -87,6 +88,7 @@ def printMessage(message : discord.Message, fileout = stdout):
 
     {message.content}
     """, file=fileout)
+
 stockpiles = loadStockpiles()
 handler = logging.FileHandler(filename="student-test.log", encoding='utf-8', mode='w')       
 intents = discord.Intents.default()
@@ -175,21 +177,22 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
     Creates a new stockpile in the channel this is run.
     """
     message = await interaction.channel.send(f"__**{name}:**__")
-    stock = stockpile.Stockpile(name, name + "stockpile.txt")
+    stock = stockpile.Stockpile(name, "stockpiles/" + str(message.guild.id) + name + "stockpile.txt")
     stock.updateMessageID(message.id)
     stockpiles[message.id] = stock #using the message id as the overall id
     stock.saveJson()
     #TODO, delete previous stockpile in this channel from memory
     #TODO respond
 
-@client.tree.command()
-@discord.app_commands.describe(
-    first_value='The first value you want to add something to',
-    second_value='The value you want to add to the first value',
-)
-async def add(interaction: discord.Interaction, first_value: int, second_value: int):
-    """Adds two numbers together."""
-    print("5")
-    await interaction.response.send_message(f'{first_value} + {second_value} = {first_value + second_value}')
+#@client.tree.command()
+#@discord.app_commands.describe(
+#    first_value='The first value you want to add something to',
+#    second_value='The value you want to add to the first value',
+#)
+#async def add(interaction: discord.Interaction, first_value: int, second_value: int):
+#    """Adds two numbers together."""
+#    print("5")
+#    await interaction.response.send_message(f'{first_value} + {second_value} = {first_value + second_value}')
 
-client.run(DiscordToken, log_handler=handler)
+if __name__ == "__main__":
+    client.run(DiscordToken, log_handler=handler)
