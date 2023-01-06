@@ -1,4 +1,5 @@
 import json
+import os
 
 class Stockpile():
     def __init__(self, name, filename = "stockpileddefault.txt", NewStockpile = True) -> None:
@@ -60,13 +61,21 @@ class Stockpile():
         if len(self.hexes[hex][depot].keys()) <= 0: #the depot does not have any stockpiles, remove it
             self.removeDepot(hex, depot)
     
+    def delete(self):
+        f = open("stockpiles/stockpile.txt", "w+")
+        lines = f.readlines
+        for line in lines:
+            line.replace(self.filename+'\n', '')
+        f.writelines(lines)
+        f.close()
+        os.remove(self.filename)
+    
     def loadJson(self, filename = None):
         if filename == None:
             filename = self.filename
             f = open(filename, "r")
     
         filelines = f.readlines()
-        
         self.messageID = filelines[0].strip('\n')
         self.name = filelines[1].strip('\n')
         jsontext = filelines[2].strip('\n') #"\n".join(filelines[2:])
@@ -80,7 +89,7 @@ class Stockpile():
         filetext = f"{self.messageID}\n{self.name}\n{json.dumps(self.hexes)}"
         f = open(filename, "w")
         f.write(filetext)
-        f.close()
+        
 
     def discordText(self):
         message = f"__**{self.name}:**__\n"

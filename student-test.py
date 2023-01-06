@@ -89,6 +89,9 @@ def printMessage(message : discord.Message, fileout = stdout):
     {message.content}
     """, file=fileout)
 
+"""
+Dictionary of stockpiles by message id
+"""
 stockpiles = loadStockpiles()
 handler = logging.FileHandler(filename="student-test.log", encoding='utf-8', mode='w')       
 intents = discord.Intents.default()
@@ -185,6 +188,19 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
     await interaction.response.send_message(content="Stockpile Created.", ephemeral=True)
     #TODO, delete previous stockpile in this channel from memory
     #TODO respond
+
+@client.tree.command()
+@discord.app_commands.describe(
+)
+
+async def delete_stockpile(interaction: discord.Interaction):
+    """
+    Deletes the stockpile in this channel
+    """
+    id, message = await getStockpile(interaction.channel, stockpiles)
+    stockpiles[id].delete()
+    del stockpiles[id]
+    await interaction.response.send_message(content="Removed the stockpile from tracking.", ephemeral=True)
 
 #@client.tree.command()
 #@discord.app_commands.describe(
