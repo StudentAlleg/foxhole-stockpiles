@@ -73,7 +73,7 @@ def loadStockpiles(filename = "stockpile.txt"):
         print (f"Loading: {lines}\n")
         tempstock = stockpile.Stockpile("temp", lines, False)
         tempstock.loadJson()
-        dictionary[tempstock.messageID] = [None, None, tempstock]
+        dictionary[tempstock.messageID] = tempstock
     return dictionary
 
 def printMessage(message : discord.Message, fileout = stdout):
