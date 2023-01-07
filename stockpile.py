@@ -40,7 +40,7 @@ class Stockpile():
             #probably doesnt exist, do nothing
             return
         if len(self.hexes[hex].keys()) <= 0: #the hex has no active depots
-            self.removeHex[hex]
+            self.removeHex(hex)
 
 
     def addStockpile(self, hex, depot, name, code):
