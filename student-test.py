@@ -6,7 +6,9 @@ from sys import stdout
 from key import DiscordToken, guild_id
 
 #TODO
-#delete stockpile in the channel (and on create)
+#Future:
+#Dropdown
+#Beautify
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -16,6 +18,7 @@ intents.message_content = True
 # 
 
 TEST_GUILD = discord.Object(id = guild_id)
+CWA_GUILD = discord.Object(id = 912409270966976542)
 
 class DiscordClient(discord.Client):
     
@@ -26,7 +29,8 @@ class DiscordClient(discord.Client):
     async def setup_hook(self) -> None:
         self.tree.copy_global_to(guild=TEST_GUILD)
         await self.tree.sync(guild=TEST_GUILD)
-
+        self.tree.copy_global_to(guild=CWA_GUILD)
+        await self.tree.sync(guild=CWA_GUILD)
 
 async def getStockpile (channel: discord.TextChannel, stockpiles):
     #first, look through stockpiles
