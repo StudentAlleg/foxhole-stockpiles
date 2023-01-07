@@ -142,7 +142,7 @@ async def add_code(interaction: discord.Interaction, hex: str, depot: str, name:
         stock.addStockpile(hex, depot, name, code)
         stock.saveJson()
         #message = stockpiles[messageID][1]
-        text = stock.discordText()
+        text = stock.gabyDiscordText()
         print (f"awaiting on uppdating message id: {message.id} to:\n{text}")
         await message.edit(content=text)
         print(f"await on message {message.id} over.")
@@ -168,7 +168,7 @@ async def remove_code(interaction: discord.Interaction, hex: str, depot:str, nam
         stock.removeStockpile(hex, depot, name)
         stock.saveJson()
         #message = stockpiles[messageID][1]
-        text = stock.discordText()
+        text = stock.gabyDiscordText()
         print (f"awaiting on uppdating message id: {message.id} to:\n{text}")
         await message.edit(content=text)
         print(f"await on message {message.id} over.")
