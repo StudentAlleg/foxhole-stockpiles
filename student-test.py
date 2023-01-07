@@ -180,14 +180,22 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
     """
     Creates a new stockpile in the channel this is run.
     """
+    #delete a previous one
+    id, _ = await getStockpile(interaction.channel, stockpiles)
+    try:
+        stockpiles[id].delete()
+        del stockpiles[id]
+    except: KeyError
+        #nothing exists, this is ok
+    
+    #make a new message
     message = await interaction.channel.send(f"__**{name}:**__")
     stock = stockpile.Stockpile(name, "stockpiles/" + str(message.guild.id) + name + "stockpile.txt")
     stock.updateMessageID(message.id)
     stockpiles[message.id] = stock #using the message id as the overall id
     stock.saveJson()
     await interaction.response.send_message(content="Stockpile Created.", ephemeral=True)
-    #TODO, delete previous stockpile in this channel from memory
-    #TODO respond
+    
 
 @client.tree.command()
 @discord.app_commands.describe(
@@ -197,11 +205,14 @@ async def delete_stockpile(interaction: discord.Interaction):
     """
     Deletes the stockpile in this channel
     """
-    id, message = await getStockpile(interaction.channel, stockpiles)
-    stockpiles[id].delete()
-    del stockpiles[id]
-    await interaction.response.send_message(content="Removed the stockpile from tracking.", ephemeral=True)
-
+    id, _ = await getStockpile(interaction.channel, stockpiles)
+    try:
+        stockpiles[id].delete()
+        del stockpiles[id]
+        await interaction.response.send_message(content="Removed the stockpile from tracking.", ephemeral=True)
+    except KeyError:
+        #it no longer exists
+        await interaction.response.send_message(content="There is not stockpile here", ephemeral=True)
 #@client.tree.command()
 #@discord.app_commands.describe(
 #    first_value='The first value you want to add something to',

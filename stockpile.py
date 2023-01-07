@@ -63,7 +63,7 @@ class Stockpile():
     
     def delete(self):
         f = open("stockpiles/stockpile.txt", "w+")
-        lines = f.readlines
+        lines = f.readlines()
         for line in lines:
             line.replace(self.filename+'\n', '')
         f.writelines(lines)
@@ -89,6 +89,7 @@ class Stockpile():
         filetext = f"{self.messageID}\n{self.name}\n{json.dumps(self.hexes)}"
         f = open(filename, "w")
         f.write(filetext)
+        f.close()
         
 
     def discordText(self):
