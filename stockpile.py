@@ -105,13 +105,15 @@ class Stockpile():
 
     def gabyDiscordText(self):
         message = "```yaml\n"
+        divider = '—'*30 +'\n'
+        message += divider
         for hex in self.hexes:
             message += f"Region: {hex}\n"
             for depot in self.hexes[hex]:
                 message += f"\tDepot: {depot}\n"
                 for name in self.hexes[hex][depot]:
                     message += f"\t\t{name}: {self.hexes[hex][depot][name]}\n"
-            message += "——————————————————————————————————\n"
+            message += divider
         message += "```"
         #print(f"returning:\n {message}")
         return message

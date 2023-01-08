@@ -140,8 +140,8 @@ async def on_ready():
 @discord.app_commands.describe(
 hex="The hex the stockpile is in. Case sensitive.",
 depot="The specific depot the stockpile is in. Case sensitive.",
-name="The name of the stockpile. Case sensitive",
-code="6 digit stockpile code"
+name="The name of the stockpile. Case sensitive.",
+code="6 digit stockpile code."
 )
 
 async def add_code(interaction: discord.Interaction, hex: str, depot: str, name: str, code:str):
@@ -171,7 +171,7 @@ async def add_code(interaction: discord.Interaction, hex: str, depot: str, name:
 @discord.app_commands.describe(
 hex="The hex the stockpile is in. Case sensitive.",
 depot="The specific depot the stockpile is in. Case sensitive.",
-name="The name of the stockpile. Case sensitive"
+name="The name of the stockpile. Case sensitive."
 )
 
 async def remove_code(interaction: discord.Interaction, hex: str, depot:str, name:str):
