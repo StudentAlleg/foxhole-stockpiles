@@ -33,6 +33,9 @@ class DiscordClient(discord.Client):
         await self.tree.sync(guild=CWA_GUILD)
 
 async def getStockpile (channel: discord.TextChannel, stockpiles):
+    """
+    Helper function to find the message that is the stockpile in this channel
+    """
     #first, look through stockpiles
     for id in stockpiles:
         try:
@@ -59,6 +62,9 @@ async def getStockpile (channel: discord.TextChannel, stockpiles):
     #return None
 
 async def removeStockpile(channel: discord.channel, stockpiles):
+    """
+    Helper function to remove a previous stockpile in this channel
+    """
     id, _ = await getStockpile(channel, stockpiles)
     try:
         stockpiles[id].delete()
@@ -70,6 +76,9 @@ async def removeStockpile(channel: discord.channel, stockpiles):
     return False
 
 async def updateStockpile(channel: discord.channel, stockpiles, hex, depot, name, code = None):
+    """
+    Primary function to update the stockpile, either by adding a code if code is specified, or removing a code if it is not
+    """
     messageID, message = await getStockpile(channel, stockpiles)
     if messageID == None:
         #there is no stockpile in this channel.
