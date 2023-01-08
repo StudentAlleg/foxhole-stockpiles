@@ -113,5 +113,5 @@ class Stockpile():
                     message += f"\t\t{name}: {self.hexes[hex][depot][name]}\n"
             message += "——————————————————————————————————\n"
         message += "```"
-        print(f"returning:\n {message}")
+        #print(f"returning:\n {message}")
         return message
