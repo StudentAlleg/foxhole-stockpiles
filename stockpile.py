@@ -1,6 +1,8 @@
 import json
 import os
 
+directory = "stockpiles/stockpile.txt"
+
 class Stockpile():
     def __init__(self, name, filename = "stockpileddefault.txt", NewStockpile = True) -> None:
         if filename == "stockpile.txt":
@@ -10,7 +12,7 @@ class Stockpile():
         self.filename = filename
         self.hexes = dict()
         if NewStockpile:
-            f = open("stockpiles/stockpile.txt", "a+")
+            f = open(directory, "a+")
             f.write(filename + '\n')
             f.close()
     

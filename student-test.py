@@ -97,7 +97,7 @@ async def updateStockpile(channel: discord.channel, stockpiles, hex, depot, name
         print(f"await on message {message.id} over.")
         return True
 
-def loadStockpiles(filename = "stockpiles/stockpile.txt"):
+def loadStockpiles(filename = stockpile.directory):
     """
     Load stockpiles from file(s) based off of the file titles in filename
     """
