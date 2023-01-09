@@ -64,7 +64,7 @@ class Stockpile():
             self.removeDepot(hex, depot)
     
     def delete(self):
-        f = open("stockpiles/stockpile.txt", "w+")
+        f = open(directory, "w+")
         lines = f.readlines()
         for line in lines:
             line.replace(self.filename+'\n', '')
