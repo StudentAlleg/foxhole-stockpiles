@@ -4,6 +4,7 @@ import os
 directory = "stockpiles/stockpile.txt"
 
 class Stockpile():
+    #TODO  directory variable
     def __init__(self, name, filename = "stockpileddefault.txt", NewStockpile = True) -> None:
         if filename == "stockpile.txt":
             filename = "stockpileddefault.txt"
