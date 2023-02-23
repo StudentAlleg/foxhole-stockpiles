@@ -207,7 +207,7 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
     
     #make a new message
     message = await interaction.channel.send(f"__**{name}:**__")
-    stock = stockpile.Stockpile(name, "stockpiles/" + str(message.guild.id) + name + "stockpile.txt")
+    stock = stockpile.Stockpile(name, "stockpiles/" + str(message.channel.id) + name + "stockpile.txt")
     stock.updateMessageID(message.id)
     stockpiles[message.id] = stock #using the message id as the overall id
     stock.saveJson()
