@@ -108,7 +108,7 @@ class Stockpile():
 
     def gabyDiscordText(self):
         message = "```yaml\n"
-        divider = '—'*30 +'\n'
+        divider = '—'*32 +'\n'
         message += divider
         for hex in self.hexes:
             message += f"Region: {hex}\n"
