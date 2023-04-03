@@ -1,7 +1,10 @@
 import json
 import os
 
+directory = "stockpiles/stockpile.txt"
+
 class Stockpile():
+    #TODO  directory variable
     def __init__(self, name, filename = "stockpileddefault.txt", NewStockpile = True) -> None:
         if filename == "stockpile.txt":
             filename = "stockpileddefault.txt"
@@ -10,7 +13,7 @@ class Stockpile():
         self.filename = filename
         self.hexes = dict()
         if NewStockpile:
-            f = open("stockpiles/stockpile.txt", "a+")
+            f = open(directory, "a+")
             f.write(filename + '\n')
             f.close()
     
@@ -62,7 +65,7 @@ class Stockpile():
             self.removeDepot(hex, depot)
     
     def delete(self):
-        f = open("stockpiles/stockpile.txt", "w+")
+        f = open(directory, "w+")
         lines = f.readlines()
         for line in lines:
             line.replace(self.filename+'\n', '')
@@ -101,4 +104,19 @@ class Stockpile():
                 for name in self.hexes[hex][depot]:
                     message += f"\t {name}: {self.hexes[hex][depot][name]}\n"
         print(f"returning:\n {message}")
+        return message
+
+    def gabyDiscordText(self):
+        message = "```yaml\n"
+        divider = '—'*32 +'\n'
+        message += divider
+        for hex in self.hexes:
+            message += f"Region: {hex}\n"
+            for depot in self.hexes[hex]:
+                message += f"\tDepot: {depot}\n"
+                for name in self.hexes[hex][depot]:
+                    message += f"\t\t{name}: {self.hexes[hex][depot][name]}\n"
+            message += divider
+        message += "```"
+        #print(f"returning:\n {message}")
         return message

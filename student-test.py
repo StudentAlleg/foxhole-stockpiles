@@ -33,6 +33,9 @@ class DiscordClient(discord.Client):
         await self.tree.sync(guild=CWA_GUILD)
 
 async def getStockpile (channel: discord.TextChannel, stockpiles):
+    """
+    Helper function to find the message that is the stockpile in this channel
+    """
     #first, look through stockpiles
     for id in stockpiles:
         try:
@@ -47,7 +50,6 @@ async def getStockpile (channel: discord.TextChannel, stockpiles):
 
     #We don't have this channel in memory, now we need to search through the messages
     
-    #TODO Something is wrong here, previous messages are not being loaded properly
     #messages = message async for message in channel.history(limit=123)
     #for message in messages:
     #    print(f"{stockpiles.keys()}\n")
@@ -59,7 +61,43 @@ async def getStockpile (channel: discord.TextChannel, stockpiles):
     #        return message.id
     #return None
 
-def loadStockpiles(filename = "stockpiles/stockpile.txt"):
+async def removeStockpile(channel: discord.channel, stockpiles):
+    """
+    Helper function to remove a previous stockpile in this channel
+    """
+    id, _ = await getStockpile(channel, stockpiles)
+    try:
+        stockpiles[id].delete()
+        del stockpiles[id]
+        return True
+    except KeyError:
+        #it no longer exists
+        pass
+    return False
+
+async def updateStockpile(channel: discord.channel, stockpiles, hex, depot, name, code = None):
+    """
+    Primary function to update the stockpile, either by adding a code if code is specified, or removing a code if it is not
+    """
+    messageID, message = await getStockpile(channel, stockpiles)
+    if messageID == None:
+        #there is no stockpile in this channel.
+        return False
+    else:
+        stock = stockpiles[messageID]
+        if (code is None):
+            stock.removeStockpile(hex, depot, name)
+        else:
+            stock.addStockpile(hex, depot, name, code)
+        stock.saveJson()
+        #message = stockpiles[messageID][1]
+        text = stock.gabyDiscordText()
+        print (f"awaiting on update message id: {message.id} to:\n{text}")
+        await message.edit(content=text)
+        print(f"await on message {message.id} over.")
+        return True
+
+def loadStockpiles(filename = stockpile.directory):
     """
     Load stockpiles from file(s) based off of the file titles in filename
     """
@@ -111,68 +149,48 @@ async def on_ready():
 @discord.app_commands.describe(
 hex="The hex the stockpile is in. Case sensitive.",
 depot="The specific depot the stockpile is in. Case sensitive.",
-name="The name of the stockpile. Case sensitive",
-code="6 digit stockpile code"
+name="The name of the stockpile. Case sensitive.",
+code="6 digit stockpile code."
 )
 
 async def add_code(interaction: discord.Interaction, hex: str, depot: str, name: str, code:str):
     """Adds a code to the stockpile list. In the channel it is in."""
-    print("6")
-    if (len(code) != 6 or not code.isdigit()):
-        print("7")
+    #print("6")
+    #if (len(code) != 6 or not code.isdigit()):
+        #print("7")
         #raise ValueError("A stockpile code must be 6 numbers long.")
-    if (hex == None):
-        print("8")
+    #if (hex == None):
+        #print("8")
         #raise ValueError("No hex provided.")
-    if(depot == None):
-        print("9")
+    #if(depot == None):
+        #print("9")
         #raise ValueError("No location provided.")
-    if(name == None):
-        print("9.5")
-    print("10")
-    messageID, message = await getStockpile(interaction.channel, stockpiles)
-    if messageID == None:
-        #there is no stockpile in this channel.
-        print("11")
-        await interaction.response.send_message("Cannot find a stockpile here.")
-        
-    else:
-        print("12")
-        stock = stockpiles[messageID]
-        stock.addStockpile(hex, depot, name, code)
-        stock.saveJson()
-        #message = stockpiles[messageID][1]
-        text = stock.discordText()
-        print (f"awaiting on uppdating message id: {message.id} to:\n{text}")
-        await message.edit(content=text)
-        print(f"await on message {message.id} over.")
+    #if(name == None):
+        #print("9.5")
+    #print("10")
+    success = await updateStockpile(interaction.channel, stockpiles, hex, depot, name, code)
+    
+    if success:
         await interaction.response.send_message(content="Code Added.", ephemeral=True)
-
+    else:
+        #there is no stockpile in this channel.
+        await interaction.response.send_message("Cannot find a stockpile here.")
 
 @client.tree.command()
 @discord.app_commands.describe(
 hex="The hex the stockpile is in. Case sensitive.",
 depot="The specific depot the stockpile is in. Case sensitive.",
-name="The name of the stockpile. Case sensitive"
+name="The name of the stockpile. Case sensitive."
 )
 
 async def remove_code(interaction: discord.Interaction, hex: str, depot:str, name:str):
     """Removes a code from a stockpile"""
     
-    messageID, message = await getStockpile(interaction.channel, stockpiles)
-    if messageID == None:
-        #there is no stockpile in this channel.
-        await interaction.response.send_message("Cannot find a stockpile here.")
-    else:
-        stock = stockpiles[messageID]
-        stock.removeStockpile(hex, depot, name)
-        stock.saveJson()
-        #message = stockpiles[messageID][1]
-        text = stock.discordText()
-        print (f"awaiting on uppdating message id: {message.id} to:\n{text}")
-        await message.edit(content=text)
-        print(f"await on message {message.id} over.")
+    success = await updateStockpile(interaction.channel, stockpiles, hex, depot, name, None)
+    if (success):
         await interaction.response.send_message(content="Code Deleted.", ephemeral=True)
+    else:
+        await interaction.response.send_message("Cannot find a stockpile here.")
 
 
 @client.tree.command()
@@ -185,16 +203,11 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
     Creates a new stockpile in the channel this is run.
     """
     #delete a previous one
-    id, _ = await getStockpile(interaction.channel, stockpiles)
-    try:
-        stockpiles[id].delete()
-        del stockpiles[id]
-    except: KeyError
-        #nothing exists, this is ok
+    await removeStockpile(interaction.channel, stockpiles)
     
     #make a new message
     message = await interaction.channel.send(f"__**{name}:**__")
-    stock = stockpile.Stockpile(name, "stockpiles/" + str(message.guild.id) + name + "stockpile.txt")
+    stock = stockpile.Stockpile(name, "stockpiles/" + str(message.channel.id) + name + "stockpile.txt")
     stock.updateMessageID(message.id)
     stockpiles[message.id] = stock #using the message id as the overall id
     stock.saveJson()
@@ -207,25 +220,13 @@ async def new_stockpile(interaction: discord.Interaction, name: str):
 
 async def delete_stockpile(interaction: discord.Interaction):
     """
-    Deletes the stockpile in this channel
+    Deletes the stockpile in this channel.
     """
-    id, _ = await getStockpile(interaction.channel, stockpiles)
-    try:
-        stockpiles[id].delete()
-        del stockpiles[id]
+    success = await removeStockpile(interaction.channel, stockpiles)
+    if (success):
         await interaction.response.send_message(content="Removed the stockpile from tracking.", ephemeral=True)
-    except KeyError:
-        #it no longer exists
+    else:
         await interaction.response.send_message(content="There is not stockpile here", ephemeral=True)
-#@client.tree.command()
-#@discord.app_commands.describe(
-#    first_value='The first value you want to add something to',
-#    second_value='The value you want to add to the first value',
-#)
-#async def add(interaction: discord.Interaction, first_value: int, second_value: int):
-#    """Adds two numbers together."""
-#    print("5")
-#    await interaction.response.send_message(f'{first_value} + {second_value} = {first_value + second_value}')
 
 if __name__ == "__main__":
     client.run(DiscordToken, log_handler=handler)
